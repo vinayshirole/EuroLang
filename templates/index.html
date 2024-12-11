@@ -16,12 +16,13 @@
         <div class="row mb-3">
             <div class="col-6">
                 <select id="sourceLanguage" class="form-select">
-                    <option value="auto" selected>Detect Language</option>
+                    <option value="" selected>Choose Language</option>
                     <!-- Options populated dynamically -->
                 </select>
             </div>
             <div class="col-6">
                 <select id="targetLanguage" class="form-select">
+                    <option value="" selected>Choose Language</option>
                     <!-- Options populated dynamically -->
                 </select>
             </div>
@@ -75,6 +76,34 @@
 
         populateLanguages();
 
+        // Update target language dropdown when source language is selected
+        sourceLanguageSelect.addEventListener('change', function () {
+            const selectedSourceLang = sourceLanguageSelect.value;
+            const targetOptions = targetLanguageSelect.querySelectorAll('option');
+
+            targetOptions.forEach(option => {
+                if (option.value === selectedSourceLang) {
+                    option.disabled = true; // Disable the selected source language from target
+                } else {
+                    option.disabled = false;
+                }
+            });
+        });
+
+        // Update source language dropdown when target language is selected
+        targetLanguageSelect.addEventListener('change', function () {
+            const selectedTargetLang = targetLanguageSelect.value;
+            const sourceOptions = sourceLanguageSelect.querySelectorAll('option');
+
+            sourceOptions.forEach(option => {
+                if (option.value === selectedTargetLang) {
+                    option.disabled = true; // Disable the selected target language from source
+                } else {
+                    option.disabled = false;
+                }
+            });
+        });
+
         // Translate button functionality
         document.getElementById("translateButton").addEventListener("click", function () {
             const inputText = document.getElementById("inputText").value;
@@ -83,6 +112,11 @@
 
             if (inputText.trim() === "") {
                 alert("Please enter some text to translate!");
+                return;
+            }
+
+            if (!sourceLanguage || !targetLanguage) {
+                alert("Please select both source and target languages!");
                 return;
             }
 

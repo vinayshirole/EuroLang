@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from langdetect import detect, DetectorFactory
+from langdetect import detect
 from deep_translator import GoogleTranslator
 from transformers import pipeline
 import re

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Translator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="container bg-white rounded-4 shadow p-4" style="max-width: 500px;">
+        <h1 class="text-center mb-4">Language Translator</h1>
+        <div class="mb-3">
+            <textarea id="inputText" class="form-control" rows="4" placeholder="Enter text here..."></textarea>
+        </div>
+        <div class="row mb-3">
+            <div class="col-6">
+                <select id="sourceLanguage" class="form-select">
+                    <option value="auto" selected>Detect Language</option>
+                    <!-- Options populated dynamically -->
+                </select>
+            </div>
+            <div class="col-6">
+                <select id="targetLanguage" class="form-select">
+                    <!-- Options populated dynamically -->
+                </select>
+            </div>
+        </div>
+        <div class="d-grid">
+            <button id="translateButton" class="btn btn-primary">Translate</button>
+        </div>
+        <div class="mt-3">
+            <textarea id="outputText" class="form-control" rows="4" placeholder="Translation will appear here..." readonly></textarea>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Language map
+        const languageMap = {
+            'english': 'en',
+            'spanish': 'es',
+            'french': 'fr',
+            'german': 'de',
+            'italian': 'it',
+            'arabic': 'ar',
+            'chinese': 'zh-cn',
+            'japanese': 'ja',
+            'portuguese': 'pt',
+            'russian': 'ru',
+            'hindi': 'hi',
+            'korean': 'ko'
+        };
+
+        const sourceLanguageSelect = document.getElementById("sourceLanguage");
+        const targetLanguageSelect = document.getElementById("targetLanguage");
+
+        // Populate language dropdowns
+        function populateLanguages() {
+            for (const [language, code] of Object.entries(languageMap)) {
+                const sourceOption = document.createElement("option");
+                const targetOption = document.createElement("option");
+
+                sourceOption.value = code;
+                sourceOption.textContent = language.charAt(0).toUpperCase() + language.slice(1);
+
+                targetOption.value = code;
+                targetOption.textContent = language.charAt(0).toUpperCase() + language.slice(1);
+
+                sourceLanguageSelect.appendChild(sourceOption);
+                targetLanguageSelect.appendChild(targetOption);
+            }
+        }
+
+        populateLanguages();
+
+        // Translate button functionality
+        document.getElementById("translateButton").addEventListener("click", function () {
+            const inputText = document.getElementById("inputText").value;
+            const sourceLanguage = sourceLanguageSelect.value;
+            const targetLanguage = targetLanguageSelect.value;
+
+            if (inputText.trim() === "") {
+                alert("Please enter some text to translate!");
+                return;
+            }
+
+            // Fetch translation from Flask backend
+            fetch("/translate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    text: inputText,
+                    source_lang: sourceLanguage,
+                    target_lang: targetLanguage,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(`Error: ${data.error}`);
+                } else {
+                    document.getElementById("outputText").value = data.translated_text;
+                    console.log("Summarized Text:", data.summarized_text);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    </script>
+</body>
+</html>

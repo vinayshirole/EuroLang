@@ -7,11 +7,11 @@ import re
 # Initialize Flask app
 app = Flask(__name__)
 
-# Set Random Seed for Consistent Language Detection
-DetectorFactory.seed = 0
+# # Set Random Seed for Consistent Language Detection
+# DetectorFactory.seed = 0
 
-# Load Summarization Model on GPU if available
-summarization_model = pipeline("summarization", model="facebook/bart-large-cnn", device=0)
+# # Load Summarization Model on GPU if available
+# summarization_model = pipeline("summarization", model="facebook/bart-large-cnn", device=0)
 
 # Language Map
 language_map = {
@@ -40,17 +40,8 @@ def translate():
         # Translate text
         translated_text = GoogleTranslator(source=source_lang, target=target_lang).translate(text)
 
-        # Summarize if requested
-        sentences = re.split(r'(?<=[.!?]) +', translated_text)
-        if len(sentences) > 2:
-            summary = summarization_model(translated_text, max_length=50, min_length=25, do_sample=False)
-            summarized_text = summary[0]['summary_text']
-        else:
-            summarized_text = translated_text
-
         return jsonify({
-            "translated_text": translated_text,
-            "summarized_text": summarized_text
+            "translated_text": translated_text
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -2,3 +2,4 @@ Flask==2.3.3
 langdetect==1.0.9
 deep-translator==1.10.1
 gunicorn==21.2.0
+transformers==4.47.0
